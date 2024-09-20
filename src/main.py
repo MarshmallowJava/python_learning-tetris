@@ -20,6 +20,10 @@ window.resizable(False, False)
 #ゲームインスタンスを生成
 game = Game(canvas)
 
+#イベントを追加
+window.bind("<KeyPress-a>", game.on_moveleft)
+window.bind("<KeyPress-d>", game.on_moveright)
+
 #ゲーム開始
 game.start()
 

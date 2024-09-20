@@ -11,13 +11,29 @@ SIZE = 22
 #ゲーム
 NEXTSIZE = 4
 
+class Board:
+    #データ
+    data = []
+
+    def __init__(self):
+        for x in range(WIDTH):
+            self.data.append([])
+            for y in range(HEIGHT):
+                self.data[x].append(None)
+
+    def is_block_at(self, x, y):
+        if(x < 0 or y < 0 or WIDTH <= x or HEIGHT <= y):
+            return True
+
+        return not self.data[x][y] == None
+
 class Game:
 
     #キャンバス
     canvas = None
 
     #盤面
-    board = np.zeros((WIDTH, HEIGHT))
+    board = Board()
 
     #所持状況
     current = None
@@ -89,3 +105,9 @@ class Game:
             self.hold = temp
 
         self.already_hold = True
+
+    def on_moveleft(self, e):
+        self.current.move_left(self.board)
+
+    def on_moveright(self, e):
+        self.current.move_right(self.board)
