@@ -48,11 +48,16 @@ class Block:
     def copy(self):
         return deepcopy(self)
     
-    def update(self):
-        self.speed += 1
-        if(self.speed > SPEED):
-            self.pos[1] += 1
-            self.speed = 0
+    def update(self, board):
+        if(self.is_ground(board)):
+            self.grace += 1
+            if(self.grace > MAXGRACE):
+                self.place_at(board)
+        else:
+            self.speed += 1
+            if(self.speed > SPEED):
+                self.pos[1] += 1
+                self.speed = 0
 
     def paint(self, x, y, size, canvas):
         w = len(self.shape)

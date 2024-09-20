@@ -26,6 +26,21 @@ class Board:
             return True
 
         return not self.data[x][y] == None
+    
+    def place_at(self, x, y, color):
+        if(x < 0 or y < 0 or WIDTH <= x or HEIGHT <= y):
+            return
+        
+        self.data[x][y] = color
+
+    def paint(self, offX, offY, canvas):
+        offX = int(offX)
+        offY = int(offY)
+        for x in range(WIDTH):
+            for y in range(HEIGHT):
+                color = self.data[x][y]
+                color = color if not color == None else ""
+                canvas.create_rectangle(offX + x * SIZE, offY + y * SIZE, offX + x * SIZE + SIZE, offY + y * SIZE + SIZE, width=1, fill=color)
 
 class Game:
 
@@ -52,7 +67,7 @@ class Game:
 
     def update(self):
         #ミノ処理
-        self.current.update()
+        self.current.update(self.board)
 
         #再描画
         self.repaint()
@@ -68,10 +83,8 @@ class Game:
         offX = (self.canvas.winfo_width() - WIDTH * SIZE) / 2
         offY = (self.canvas.winfo_height() - HEIGHT * SIZE) / 2
 
-        #盤面の枠を描画
-        for x in range(WIDTH):
-            for y in range(HEIGHT):
-                self.canvas.create_rectangle(offX + x * SIZE, offY + y * SIZE, offX + x * SIZE + SIZE, offY + y * SIZE + SIZE, width=1, fill="")
+        #盤面を描画
+        self.board.paint(self.canvas, offX, offY)
         
         #次のミノを描画
         self.canvas.create_text(offX + WIDTH * SIZE + SIZE / 2 * 3, offY, text="NEXT", anchor="s")
