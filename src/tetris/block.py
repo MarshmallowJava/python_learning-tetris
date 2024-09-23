@@ -1,23 +1,18 @@
 
 from copy import deepcopy
 
-MAXGRACE = 125
+MAXGRACE = 50
 SPEED = 25
+
 class Block:
-
-    pos = [4, 2]
-    speed = 0
-    grace = 0
-
-    shape = None
-    center = None
-
-    color = None
-
     def __init__(self, shape, center, color):
         self.shape = shape
         self.center = center
         self.color = color
+        self.pos = [4, 2]
+        self.speed = 0
+        self.grace = 0
+        self.placed = False
 
     def move_left(self, board):
         if(not self.is_collide(self.pos[0] - 1, self.pos[1], board)):
@@ -45,6 +40,20 @@ class Block:
         
         return False
     
+    def place_at(self, board):
+        self.placed = True
+
+        w = len(self.shape)
+        h = len(self.shape[0])
+
+        for bx in range(w):
+            for by in range(h):
+                block = self.shape[bx][by]
+                wx = self.pos[0] - self.center[0] + bx
+                wy = self.pos[1] - self.center[1] + by
+                if(block == 1):
+                    board.place_at(wx, wy, self.color)
+
     def copy(self):
         return deepcopy(self)
     

@@ -12,10 +12,8 @@ SIZE = 22
 NEXTSIZE = 4
 
 class Board:
-    #データ
-    data = []
-
     def __init__(self):
+        self.data = []
         for x in range(WIDTH):
             self.data.append([])
             for y in range(HEIGHT):
@@ -34,8 +32,6 @@ class Board:
         self.data[x][y] = color
 
     def paint(self, offX, offY, canvas):
-        offX = int(offX)
-        offY = int(offY)
         for x in range(WIDTH):
             for y in range(HEIGHT):
                 color = self.data[x][y]
@@ -44,22 +40,13 @@ class Board:
 
 class Game:
 
-    #キャンバス
-    canvas = None
-
-    #盤面
-    board = Board()
-
-    #所持状況
-    current = None
-    hold = None
-    already_hold = False
-
-    #デッキ
-    next = []
-
     def __init__(self, canvas):
         self.canvas = canvas
+        self.board = Board()
+        self.current = None
+        self.holding = None
+        self.already_hold = False
+        self.next = []
 
     def start(self):
         self.take_next()
@@ -68,6 +55,8 @@ class Game:
     def update(self):
         #ミノ処理
         self.current.update(self.board)
+        if(self.current.placed):
+            self.take_next()
 
         #再描画
         self.repaint()
@@ -84,7 +73,7 @@ class Game:
         offY = (self.canvas.winfo_height() - HEIGHT * SIZE) / 2
 
         #盤面を描画
-        self.board.paint(self.canvas, offX, offY)
+        self.board.paint(offX, offY, self.canvas)
         
         #次のミノを描画
         self.canvas.create_text(offX + WIDTH * SIZE + SIZE / 2 * 3, offY, text="NEXT", anchor="s")
@@ -99,10 +88,11 @@ class Game:
 
 
     def take_next(self):
-        stock = block_list()
-        shuffle(stock)
-        for b in stock:
-            self.next.append(b)
+        if(len(self.next) < NEXTSIZE):
+            stock = block_list()
+            shuffle(stock)
+            for b in stock:
+                self.next.append(b)
 
         self.current = self.next.pop(0)
     
@@ -110,12 +100,12 @@ class Game:
         if(self.already_hold):
             return
         
-        if(self.hold == None):
-            self.hold = self.current
+        if(self.holding == None):
+            self.holding = self.current
         else:
             temp = self.current
-            self.current = self.hold
-            self.hold = temp
+            self.current = self.holding
+            self.holding = temp
 
         self.already_hold = True
 
