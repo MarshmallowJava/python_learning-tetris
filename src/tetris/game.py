@@ -95,7 +95,7 @@ class Game:
                 self.next.append(b)
 
         self.current = self.next.pop(0)
-    
+
     def hold(self):
         if(self.already_hold):
             return
@@ -114,3 +114,6 @@ class Game:
 
     def on_moveright(self, e):
         self.current.move_right(self.board)
+    
+    def on_softdrop(self, e):
+        self.current.softdrop()

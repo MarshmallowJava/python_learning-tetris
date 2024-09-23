@@ -12,6 +12,7 @@ class Block:
         self.pos = [4, 2]
         self.speed = 0
         self.grace = 0
+        self.drop = False
         self.placed = False
 
     def move_left(self, board):
@@ -21,6 +22,10 @@ class Block:
     def move_right(self, board):
         if(not self.is_collide(self.pos[0] + 1, self.pos[1], board)):
             self.pos[0] += 1
+    
+    def softdrop(self):
+        self.speed = SPEED
+        self.drop = True
 
     def is_ground(self, board):
         return self.is_collide(self.pos[0], self.pos[1] + 1, board)
@@ -60,13 +65,15 @@ class Block:
     def update(self, board):
         if(self.is_ground(board)):
             self.grace += 1
-            if(self.grace > MAXGRACE):
+            if(self.grace > MAXGRACE or (self.drop and self.grace > MAXGRACE / 2)):
                 self.place_at(board)
         else:
             self.speed += 1
             if(self.speed > SPEED):
                 self.pos[1] += 1
                 self.speed = 0
+
+        self.drop = False
 
     def paint(self, x, y, size, canvas):
         w = len(self.shape)
