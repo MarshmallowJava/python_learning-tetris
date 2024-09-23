@@ -1,7 +1,7 @@
 
 from copy import deepcopy
 
-MAXGRACE = 50
+MAXGRACE = 25
 SPEED = 25
 
 class Block:
@@ -103,4 +103,4 @@ O = Block([[1, 1],[1, 1]], (1, 1), "yellow")
 T = Block([[0, 1], [1, 1], [0, 1]], (1, 1), "purple")
 
 def block_list():
-    return [S, Z, L, J, I, O, T]
+    return [S.copy(), Z.copy(), L.copy(), J.copy(), I.copy(), O.copy(), T.copy()]

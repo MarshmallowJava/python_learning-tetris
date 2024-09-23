@@ -49,6 +49,7 @@ class Game:
         self.next = []
 
     def start(self):
+        self.supply()
         self.take_next()
         self.update()
 
@@ -86,15 +87,18 @@ class Game:
         y = (self.current.pos[1] - self.current.center[1]) * SIZE
         self.current.paint(offX + x, offY + y, SIZE, self.canvas)
 
+    def supply(self):
+        stock = block_list()
+        shuffle(stock)
+        for b in stock:
+            self.next.append(b)
+
 
     def take_next(self):
-        if(len(self.next) < NEXTSIZE):
-            stock = block_list()
-            shuffle(stock)
-            for b in stock:
-                self.next.append(b)
-
         self.current = self.next.pop(0)
+
+        if(len(self.next) < NEXTSIZE):
+            self.supply()
 
     def hold(self):
         if(self.already_hold):
