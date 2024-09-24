@@ -19,7 +19,7 @@ class Board:
                 self.data[x].append(None)
 
     def is_block_at(self, x, y):
-        if(x < 0  or WIDTH <= x or HEIGHT <= y):
+        if(x < 0 or WIDTH <= x or HEIGHT <= y):
             return True
 
         if(y < 0):
@@ -52,14 +52,15 @@ class Game:
 
     def start(self):
         self.supply()
-        self.take_next()
+        self.current = self.take_next()
         self.update()
 
     def update(self):
         #ミノ処理
         self.current.update(self.board)
         if(self.current.placed):
-            self.take_next()
+            self.current = self.take_next()
+            self.already_hold = False
 
         #再描画
         self.repaint()
@@ -83,7 +84,12 @@ class Game:
         for i in range(NEXTSIZE):
             block = self.next[i]
             block.paint(offX + WIDTH * SIZE + SIZE / 2 * 3, offY + i * SIZE / 2 * 5 + SIZE / 2 * 2, SIZE / 2, self.canvas, center = True)
-        
+
+        #ホールド中のミノを表示
+        self.canvas.create_text(offX - SIZE / 2 * 4, offY, text="HOLD", anchor="s")
+        if(not self.holding == None):
+            self.holding.paint(offX - SIZE / 2 * 4, offY + SIZE / 2 * 2, SIZE / 2, self.canvas, center = True)
+
         #現在のミノを表示
         self.current.paint(offX, offY, SIZE, self.canvas)
 
@@ -93,25 +99,31 @@ class Game:
         for b in stock:
             self.next.append(b)
 
-
     def take_next(self):
-        self.current = self.next.pop(0)
+        next = self.next.pop(0)
+        next.move(3, 0, self.board, absolute = True)
 
         if(len(self.next) < NEXTSIZE):
             self.supply()
+
+        return next
 
     def hold(self):
         if(self.already_hold):
             return
         
         if(self.holding == None):
-            self.holding = self.current
-        else:
-            temp = self.current
-            self.current = self.holding
-            self.holding = temp
+            self.holding = self.take_next()
+            self.holding.move(-3, 0, self.board, absolute = True)
 
+        temp = self.current
+        self.current = self.holding
+        self.current.move(3, 0, self.board, absolute = True)
         self.already_hold = True
+
+        for block in block_list():
+            if(block.id == temp.id):
+                self.holding = block
 
     def on_moveleft(self, e):
         self.current.move_left(self.board)
@@ -127,3 +139,6 @@ class Game:
 
     def on_softdrop(self, e):
         self.current.softdrop()
+    
+    def on_hold(self, e):
+        self.hold()

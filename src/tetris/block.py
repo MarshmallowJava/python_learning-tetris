@@ -6,6 +6,7 @@ SPEED = 25
 class Tetrimino:
 
     def __init__(self, shape, center, color):
+        self.id = color
         self.center = center
         self.speed = 0
         self.grace = 0
@@ -38,8 +39,8 @@ class Tetrimino:
     def move_right(self, board):
         self.move(1, 0, board)
     
-    def move(self, dx, dy, board):
-        if(self.is_collide(dx, dy, board)):
+    def move(self, dx, dy, board, absolute = False):
+        if(not absolute and self.is_collide(dx, dy, board)):
             return
 
         for block in self.blocks:
