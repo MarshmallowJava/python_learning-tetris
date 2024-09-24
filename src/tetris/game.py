@@ -22,7 +22,7 @@ class Board:
         if(x < 0 or y < 0 or WIDTH <= x or HEIGHT <= y):
             return True
 
-        return not self.data[x][y] == None
+        return not self.data[int(x)][int(y)] == None
     
     def place_at(self, x, y, color):
         if(x < 0 or y < 0 or WIDTH <= x or HEIGHT <= y):
@@ -117,10 +117,10 @@ class Game:
         self.current.move_right(self.board)
     
     def on_rotate_right(self, e):
-        self.current.rotate(-90)
+        self.current.rotate(90, self.board)
 
     def on_rotate_left(self, e):
-        self.current.rotate(90)
+        self.current.rotate(-90, self.board)
 
     def on_softdrop(self, e):
         self.current.softdrop()

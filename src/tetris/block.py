@@ -44,6 +44,18 @@ class Tetrimino:
         for block in self.blocks:
             block.move(dx, dy)
 
+        self.center[0] += dx
+        self.center[1] += dy
+
+    def rotate(self, angle, board):
+
+        for block in self.blocks:
+            if(not block.can_rotate(angle, self.center[0], self.center[1], board)):
+                return
+        
+        for block in self.blocks:
+            block.rotate(angle, self.center[0], self.center[1])
+
     def softdrop(self):
         self.speed = SPEED
         self.drop = True
@@ -116,15 +128,50 @@ class Block:
     def is_collide(self, dx, dy, board):
         return board.is_block_at(self.pos[0] + dx, self.pos[1] + dy)
     
+    def can_rotate(self, r, cx, cy, board):
+        s = Block.sin(r)
+        c = Block.cos(r)
+
+        nx = (self.pos[0] - cx) * c - (self.pos[1] - cy) * s + cx
+        ny = (self.pos[0] - cx) * s + (self.pos[1] - cy) * c + cy
+
+        return not board.is_block_at(nx, ny)
+    
+    def rotate(self, r, cx, cy):
+        s = Block.sin(r)
+        c = Block.cos(r)
+
+        nx = int((self.pos[0] - cx) * c - (self.pos[1] - cy) * s + cx)
+        ny = int((self.pos[0] - cx) * s + (self.pos[1] - cy) * c + cy)
+
+        self.pos[0] = nx
+        self.pos[1] = ny
+
     def paint(self, x, y, size, canvas):
         canvas.create_rectangle(x + self.pos[0] * size, y + self.pos[1] * size, x + (self.pos[0] + 1) * size, y + (self.pos[1] + 1) * size, fill=self.color)
+    
+    def sin(angle):
+        if(angle == 90):
+            return 1
+        elif(angle == -90):
+            return -1
+        else:
+            return 0
+
+    def cos(angle):
+        if(angle == 90):
+            return 0
+        elif(angle == -90):
+            return 0
+        else:
+            return 1
 
 def block_list():
-    S = Tetrimino([[0,1],[1,1],[1,0]], (1, 1), "green")
-    Z = Tetrimino([[1,0],[1,1],[0,1]], (1, 1), "red")
-    L = Tetrimino([[0, 1], [0, 1], [1, 1]], (1, 2), "orange")
-    J = Tetrimino([[1, 1],[0, 1],[0, 1]], (1, 2), "blue")
-    I = Tetrimino([[1, 1, 1, 1]], (0, 2), "cyan")
-    O = Tetrimino([[1, 1],[1, 1]], (1, 1), "yellow")
-    T = Tetrimino([[0, 1], [1, 1], [0, 1]], (1, 1), "purple")
+    S = Tetrimino([[0,1],[1,1],[1,0]], [1.5, 1], "green")
+    Z = Tetrimino([[1,0],[1,1],[0,1]], [1.5, 1], "red")
+    L = Tetrimino([[0, 1], [0, 1], [1, 1]], [1, 1.5], "orange")
+    J = Tetrimino([[1, 1],[0, 1],[0, 1]], [1, 1.5], "blue")
+    I = Tetrimino([[1, 1, 1, 1]], [0, 2], "cyan")
+    O = Tetrimino([[1, 1],[1, 1]], [0.5, 0.5], "yellow")
+    T = Tetrimino([[0, 1], [1, 1], [0, 1]], [1, 1], "purple")
     return [S, Z, L, J, I, O, T]
