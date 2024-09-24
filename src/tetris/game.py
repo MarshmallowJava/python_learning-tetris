@@ -19,10 +19,13 @@ class Board:
                 self.data[x].append(None)
 
     def is_block_at(self, x, y):
-        if(x < 0 or y < 0 or WIDTH <= x or HEIGHT <= y):
+        if(x < 0  or WIDTH <= x or HEIGHT <= y):
             return True
 
-        return not self.data[int(x)][int(y)] == None
+        if(y < 0):
+            return False
+
+        return not self.data[x][y] == None
     
     def place_at(self, x, y, color):
         if(x < 0 or y < 0 or WIDTH <= x or HEIGHT <= y):

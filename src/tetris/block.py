@@ -1,3 +1,4 @@
+from math import floor
 
 MAXGRACE = 25
 SPEED = 25
@@ -132,8 +133,8 @@ class Block:
         s = Block.sin(r)
         c = Block.cos(r)
 
-        nx = (self.pos[0] - cx) * c - (self.pos[1] - cy) * s + cx
-        ny = (self.pos[0] - cx) * s + (self.pos[1] - cy) * c + cy
+        nx = Block.cast((self.pos[0] - cx) * c - (self.pos[1] - cy) * s + cx)
+        ny = Block.cast((self.pos[0] - cx) * s + (self.pos[1] - cy) * c + cy)
 
         return not board.is_block_at(nx, ny)
     
@@ -141,8 +142,8 @@ class Block:
         s = Block.sin(r)
         c = Block.cos(r)
 
-        nx = int((self.pos[0] - cx) * c - (self.pos[1] - cy) * s + cx)
-        ny = int((self.pos[0] - cx) * s + (self.pos[1] - cy) * c + cy)
+        nx = Block.cast((self.pos[0] - cx) * c - (self.pos[1] - cy) * s + cx)
+        ny = Block.cast((self.pos[0] - cx) * s + (self.pos[1] - cy) * c + cy)
 
         self.pos[0] = nx
         self.pos[1] = ny
@@ -165,6 +166,9 @@ class Block:
             return 0
         else:
             return 1
+
+    def cast(f):
+        return floor(f) if f < 0 else int(f)
 
 def block_list():
     S = Tetrimino([[0,1],[1,1],[1,0]], [1.5, 1], "green")
