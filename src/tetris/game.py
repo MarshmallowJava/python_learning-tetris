@@ -33,6 +33,27 @@ class Board:
         
         self.data[x][y] = color
 
+    def check(self):
+        line = HEIGHT - 1
+        while(line >= 0):
+            print(line)
+            for i in range(WIDTH):
+                if(not self.is_block_at(i, line)):
+                    line -= 1
+                    break
+                elif(i == WIDTH - 1):
+                    #ライン消去
+                    for j in range(WIDTH):
+                        for line2 in range(HEIGHT - line - 1):
+                            k = HEIGHT - line2
+                            if(k == 0):
+                                self.data[j][k] = None
+                            else:
+                                self.data[j][k] = self.data[j][k - 1]
+
+                    #最初からやり直し
+                    line = HEIGHT - 1
+
     def paint(self, offX, offY, canvas):
         for x in range(WIDTH):
             for y in range(HEIGHT):
@@ -61,6 +82,7 @@ class Game:
         if(self.current.placed):
             self.current = self.take_next()
             self.already_hold = False
+            self.board.check()
 
         #再描画
         self.repaint()
