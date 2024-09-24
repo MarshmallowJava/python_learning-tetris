@@ -83,19 +83,21 @@ class Tetrimino:
             block.paint(x, y, size, canvas)
 
     def width(self):
-        return len(0)
+        return self.len(0)
 
     def height(self):
-        return len(1)
+        return self.len(1)
 
     def len(self, index):
-        min = self.blocks.pos[index]
-        max = self.blocks.pos[index]
+        min = self.blocks[0].pos[index]
+        max = self.blocks[0].pos[index]
+
         for block in self.blocks:
             if(block.pos[index] < min):
                 min = block.pos[index]
             if(block.pos[index] > max):
                 max = block.pos[index]
+
         return max - min
 
 class Block:

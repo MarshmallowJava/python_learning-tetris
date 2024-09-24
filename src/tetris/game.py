@@ -79,7 +79,7 @@ class Game:
         self.canvas.create_text(offX + WIDTH * SIZE + SIZE / 2 * 3, offY, text="NEXT", anchor="s")
         for i in range(NEXTSIZE):
             block = self.next[i]
-            block.paint(offX + WIDTH * SIZE + SIZE / 2 * 3, offY + i * SIZE / 2 * 5 + SIZE / 2 * 2, SIZE / 2, self.canvas)
+            block.paint(offX + WIDTH * SIZE + SIZE / 2 * 3, offY + i * SIZE / 2 * 5 + SIZE / 2 * 2, SIZE / 2, self.canvas, center = True)
         
         #現在のミノを表示
         self.current.paint(offX, offY, SIZE, self.canvas)
