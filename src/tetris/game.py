@@ -1,4 +1,3 @@
-import numpy as np
 from random import shuffle
 
 from tetris.block import block_list
@@ -83,9 +82,7 @@ class Game:
             block.paint(offX + WIDTH * SIZE + SIZE / 2 * 3, offY + i * SIZE / 2 * 5 + SIZE / 2 * 2, SIZE / 2, self.canvas)
         
         #現在のミノを表示
-        x = (self.current.pos[0] - self.current.center[0]) * SIZE
-        y = (self.current.pos[1] - self.current.center[1]) * SIZE
-        self.current.paint(offX + x, offY + y, SIZE, self.canvas)
+        self.current.paint(offX, offY, SIZE, self.canvas)
 
     def supply(self):
         stock = block_list()
@@ -119,5 +116,11 @@ class Game:
     def on_moveright(self, e):
         self.current.move_right(self.board)
     
+    def on_rotate_right(self, e):
+        self.current.rotate(-90)
+
+    def on_rotate_left(self, e):
+        self.current.rotate(90)
+
     def on_softdrop(self, e):
         self.current.softdrop()

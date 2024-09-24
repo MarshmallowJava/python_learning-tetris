@@ -23,6 +23,7 @@ game = Game(canvas)
 #イベントを追加
 window.bind("<Left>", game.on_moveleft)
 window.bind("<Right>", game.on_moveright)
+# window.bind("<Up>", game.on_rotate_right)
 window.bind("<Down>", game.on_softdrop)
 
 #ゲーム開始
