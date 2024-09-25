@@ -106,6 +106,10 @@ class Tetrimino:
         self.speed = SPEED
         self.drop = True
     
+    def harddrop(self):
+        self.move(0, self.shadow_depth, None, absolute=True)
+        self.grace = MAXGRACE
+    
     def place(self, board):
         for block in self.blocks:
             block.place(board)

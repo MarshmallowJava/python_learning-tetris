@@ -27,6 +27,7 @@ window.bind("<Down>", game.on_softdrop)
 window.bind("<Up>", game.on_rotate_right)
 window.bind("<KeyPress-z>", game.on_rotate_left)
 window.bind("<KeyPress-x>", game.on_hold)
+window.bind("<KeyPress-c>", game.on_harddrop)
 
 #ゲーム開始
 game.start()

@@ -166,5 +166,8 @@ class Game:
     def on_softdrop(self, e):
         self.current.softdrop()
     
+    def on_harddrop(self, e):
+        self.current.harddrop()
+    
     def on_hold(self, e):
         self.hold()
