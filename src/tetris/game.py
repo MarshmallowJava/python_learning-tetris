@@ -34,6 +34,8 @@ class Board:
         self.data[x][y] = color
 
     def check(self):
+        count = 0
+
         line = HEIGHT - 1
         while(line >= 0):
             for i in range(WIDTH):
@@ -41,6 +43,7 @@ class Board:
                     line -= 1
                     break
                 elif(i == WIDTH - 1):
+                    count += 1
                     #ライン消去
                     for j in range(WIDTH):
                         for line2 in range(line):
@@ -52,6 +55,8 @@ class Board:
 
                     #最初からやり直し
                     line = HEIGHT - 1
+    
+        return count
 
     def paint(self, offX, offY, canvas):
         for x in range(WIDTH):
