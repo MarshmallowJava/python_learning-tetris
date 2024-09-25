@@ -69,11 +69,22 @@ class Game:
 
     def __init__(self, canvas):
         self.canvas = canvas
+
+        #ボード情報
         self.board = Board()
+
+        #操作中のミノ
         self.current = None
+
+        #ホールド
         self.holding = None
         self.already_hold = False
+
+        #デッキ
         self.next = []
+
+        #連数
+        self.ren = -1
 
     def start(self):
         self.supply()
@@ -86,7 +97,10 @@ class Game:
         if(self.current.placed):
             self.current = self.take_next()
             self.already_hold = False
-            self.board.check()
+            if(self.board.check() > 0):
+                self.ren += 1
+            else:
+                self.ren = -1
 
         #再描画
         self.repaint()
@@ -104,7 +118,11 @@ class Game:
 
         #盤面を描画
         self.board.paint(offX, offY, self.canvas)
-        
+
+        #REN数
+        if(self.ren > 0):
+            self.canvas.create_text(10, offY, text=str(self.ren) + "REN", anchor="sw")
+
         #次のミノを描画
         self.canvas.create_text(offX + WIDTH * SIZE + SIZE / 2 * 3, offY, text="NEXT", anchor="s")
         for i in range(NEXTSIZE):
