@@ -3,6 +3,14 @@ from math import floor
 MAXGRACE = 25
 SPEED = 25
 
+SRSDATA0 = [
+    [[-1, 0], [-1, -1], [0, 2], [-1, 2]],
+    [[1, 0], [1, 1], [0, -2], [1, -2]],
+    [[1, 0], [1, -1], [0, 2], [1, 2]],
+    [[-2, 0], [-2, 1], [0, -2], [-1, -2]]
+]
+SRSDATA1 = []
+
 class Tetrimino:
 
     def __init__(self, shape, center, color):
@@ -12,6 +20,7 @@ class Tetrimino:
         self.grace = 0
         self.drop = False
         self.placed = False
+        self.angle = 0
 
         self.blocks = []
         for x in range(len(shape)):
@@ -50,12 +59,21 @@ class Tetrimino:
         self.center[1] += dy
 
     def rotate(self, angle, board):
+        normal = True
+
         for block in self.blocks:
-            if(not block.can_rotate(angle, self.center[0], self.center[1], board)):
-                return
-        
-        for block in self.blocks:
-            block.rotate(angle, self.center[0], self.center[1])
+            if(not block.can_rotate(angle, 0, 0, self.center[0], self.center[1], board)):
+                normal = False
+                break
+
+        if(normal):
+            for block in self.blocks:
+                block.rotate(angle, 0, 0, self.center[0], self.center[1])
+            #合計回転量をSRS用に計算しておく        
+            self.angle += angle
+            self.angle = (self.angle + 360 if self.angle < 0 else self.angle) % 360
+        else:
+            a = 1
 
     def softdrop(self):
         self.speed = SPEED
@@ -129,22 +147,29 @@ class Block:
     def is_collide(self, dx, dy, board):
         return board.is_block_at(self.pos[0] + dx, self.pos[1] + dy)
     
-    def can_rotate(self, r, cx, cy, board):
+    def can_rotate(self, dx, dy, r, cx, cy, board):
         s = Block.sin(r)
         c = Block.cos(r)
 
-        nx = Block.cast((self.pos[0] - cx) * c - (self.pos[1] - cy) * s + cx)
-        ny = Block.cast((self.pos[0] - cx) * s + (self.pos[1] - cy) * c + cy)
+        x = self.pos[0] + dx
+        y = self.pos[1] + dy
+        cx += dx
+        cy += dy
+        nx = Block.cast((x - cx) * c - (y - cy) * s + cx)
+        ny = Block.cast((x - cx) * s + (y - cy) * c + cy)
 
         return not board.is_block_at(nx, ny)
-    
-    def rotate(self, r, cx, cy):
+
+    def rotate(self, dx, dy, r, cx, cy):
         s = Block.sin(r)
         c = Block.cos(r)
 
-        nx = Block.cast((self.pos[0] - cx) * c - (self.pos[1] - cy) * s + cx)
-        ny = Block.cast((self.pos[0] - cx) * s + (self.pos[1] - cy) * c + cy)
-
+        x = self.pos[0] + dx
+        y = self.pos[1] + dy
+        cx += dx
+        cy += dy
+        nx = Block.cast((x - cx) * c - (y - cy) * s + cx)
+        ny = Block.cast((x - cx) * s + (y - cy) * c + cy)
         self.pos[0] = nx
         self.pos[1] = ny
 
