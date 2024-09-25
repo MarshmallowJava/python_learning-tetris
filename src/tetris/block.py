@@ -3,13 +3,20 @@ from math import floor
 MAXGRACE = 25
 SPEED = 25
 
+#右回転
 SRSDATA0 = [
-    [[-1, 0], [-1, -1], [0, 2], [-1, 2]],
-    [[1, 0], [1, 1], [0, -2], [1, -2]],
-    [[1, 0], [1, -1], [0, 2], [1, 2]],
-    [[-2, 0], [-2, 1], [0, -2], [-1, -2]]
+    [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
+    [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
+    [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]],
+    [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]]
 ]
-SRSDATA1 = []
+#左回転
+SRSDATA1 = [
+    [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]],          #0   -> #270
+    [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],         #90  -> 0
+    [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],       #180 -> 90
+    [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]]       #270 -> 180
+]
 
 class Tetrimino:
 
@@ -59,21 +66,32 @@ class Tetrimino:
         self.center[1] += dy
 
     def rotate(self, angle, board):
-        normal = True
+        index = self.angle
+        index = (index + 360 if index < 0 else index) % 360
+        index = int(index / 90)
 
-        for block in self.blocks:
-            if(not block.can_rotate(angle, 0, 0, self.center[0], self.center[1], board)):
-                normal = False
-                break
+        srsdata = SRSDATA0[index] if angle > 0 else SRSDATA1[index]
 
-        if(normal):
+        for d in srsdata:
+            flag = True
+
             for block in self.blocks:
-                block.rotate(angle, 0, 0, self.center[0], self.center[1])
-            #合計回転量をSRS用に計算しておく        
-            self.angle += angle
-            self.angle = (self.angle + 360 if self.angle < 0 else self.angle) % 360
-        else:
-            a = 1
+                if(not block.can_rotate(d[0], d[1], angle, self.center[0], self.center[1], board)):
+                    flag = False
+                    break
+
+
+            if(flag):
+                self.angle += angle
+                self.angle = (self.angle + 360 if self.angle < 0 else self.angle) % 360
+
+                for block in self.blocks:
+                    block.rotate(d[0], d[1], angle, self.center[0], self.center[1])
+                
+                self.center[0] += d[0]
+                self.center[1] += d[1]
+
+                return
 
     def softdrop(self):
         self.speed = SPEED
@@ -151,12 +169,10 @@ class Block:
         s = Block.sin(r)
         c = Block.cos(r)
 
-        x = self.pos[0] + dx
-        y = self.pos[1] + dy
-        cx += dx
-        cy += dy
-        nx = Block.cast((x - cx) * c - (y - cy) * s + cx)
-        ny = Block.cast((x - cx) * s + (y - cy) * c + cy)
+        x = self.pos[0]
+        y = self.pos[1]
+        nx = Block.cast((x - cx) * c - (y - cy) * s + cx) + dx
+        ny = Block.cast((x - cx) * s + (y - cy) * c + cy) + dy
 
         return not board.is_block_at(nx, ny)
 
@@ -164,12 +180,11 @@ class Block:
         s = Block.sin(r)
         c = Block.cos(r)
 
-        x = self.pos[0] + dx
-        y = self.pos[1] + dy
-        cx += dx
-        cy += dy
-        nx = Block.cast((x - cx) * c - (y - cy) * s + cx)
-        ny = Block.cast((x - cx) * s + (y - cy) * c + cy)
+        x = self.pos[0]
+        y = self.pos[1]
+        nx = Block.cast((x - cx) * c - (y - cy) * s + cx) + dx
+        ny = Block.cast((x - cx) * s + (y - cy) * c + cy) + dy
+
         self.pos[0] = nx
         self.pos[1] = ny
 
@@ -200,7 +215,7 @@ def block_list():
     Z = Tetrimino([[1,0],[1,1],[0,1]], [1, 1], "red")
     L = Tetrimino([[0, 1], [0, 1], [1, 1]], [1, 1], "orange")
     J = Tetrimino([[1, 1],[0, 1],[0, 1]], [1, 1], "blue")
-    I = Tetrimino([[1, 1, 1, 1]], [0.5, 2], "cyan")
+    I = Tetrimino([[1], [1], [1], [1]], [2, 0.5], "cyan")
     O = Tetrimino([[1, 1],[1, 1]], [0.5, 0.5], "yellow")
     T = Tetrimino([[0, 1], [1, 1], [0, 1]], [1, 1], "purple")
     return [S, Z, L, J, I, O, T]
