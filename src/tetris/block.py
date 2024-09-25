@@ -20,8 +20,10 @@ SRSDATA1 = [
 
 class Tetrimino:
 
-    def __init__(self, shape, center, color):
+    def __init__(self, shape, center, color, color2):
         self.id = color
+        self.shadow = color2
+        self.shadow_depth = -1
         self.center = center
         self.speed = 0
         self.grace = 0
@@ -46,6 +48,13 @@ class Tetrimino:
             if(self.speed > SPEED):
                 self.move(0, 1, board)
                 self.speed = 0
+        
+        i = 0
+        while(True):
+            if(self.is_collide(0, i + 1, board)):
+                break
+            i += 1
+        self.shadow_depth = i
 
         self.drop = False
 
@@ -128,9 +137,13 @@ class Tetrimino:
             x -= width / 2
             y -= height / 2
 
+        if(not self.shadow_depth == -1):
+            for block in self.blocks:
+                block.paint(x, y + self.shadow_depth * size, size, canvas, color = self.shadow)
+
         for block in self.blocks:
             block.paint(x, y, size, canvas)
-
+        
     def width(self):
         return self.len(0)
 
@@ -188,8 +201,9 @@ class Block:
         self.pos[0] = nx
         self.pos[1] = ny
 
-    def paint(self, x, y, size, canvas):
-        canvas.create_rectangle(x + self.pos[0] * size, y + self.pos[1] * size, x + (self.pos[0] + 1) * size, y + (self.pos[1] + 1) * size, fill=self.color)
+    def paint(self, x, y, size, canvas, color = None):
+        color = self.color if color == None else color
+        canvas.create_rectangle(x + self.pos[0] * size, y + self.pos[1] * size, x + (self.pos[0] + 1) * size, y + (self.pos[1] + 1) * size, fill=color)
     
     def sin(angle):
         if(angle == 90):
@@ -211,11 +225,11 @@ class Block:
         return floor(f) if f < 0 else int(f)
 
 def block_list():
-    S = Tetrimino([[0,1],[1,1],[1,0]], [1, 1], "green")
-    Z = Tetrimino([[1,0],[1,1],[0,1]], [1, 1], "red")
-    L = Tetrimino([[0, 1], [0, 1], [1, 1]], [1, 1], "orange")
-    J = Tetrimino([[1, 1],[0, 1],[0, 1]], [1, 1], "blue")
-    I = Tetrimino([[1], [1], [1], [1]], [2, 0.5], "cyan")
-    O = Tetrimino([[1, 1],[1, 1]], [0.5, 0.5], "yellow")
-    T = Tetrimino([[0, 1], [1, 1], [0, 1]], [1, 1], "purple")
+    S = Tetrimino([[0,1],[1,1],[1,0]], [1, 1], "#00ee00", "#88ff88")
+    Z = Tetrimino([[1,0],[1,1],[0,1]], [1, 1], "#ee0000", "#ff8888")
+    L = Tetrimino([[0, 1], [0, 1], [1, 1]], [1, 1], "#ffaa00", "#ffdd99")
+    J = Tetrimino([[1, 1],[0, 1],[0, 1]], [1, 1], "#0000ee", "#8888ff")
+    I = Tetrimino([[1], [1], [1], [1]], [2, 0.5], "#00e8e8", "#88fcfc")
+    O = Tetrimino([[1, 1],[1, 1]], [0.5, 0.5], "#eeee00", "#ffff88")
+    T = Tetrimino([[0, 1], [1, 1], [0, 1]], [1, 1], "#aa22ee", "#dd88ff")
     return [S, Z, L, J, I, O, T]
