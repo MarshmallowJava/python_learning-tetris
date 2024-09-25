@@ -175,7 +175,7 @@ def block_list():
     Z = Tetrimino([[1,0],[1,1],[0,1]], [1, 1], "red")
     L = Tetrimino([[0, 1], [0, 1], [1, 1]], [1, 1], "orange")
     J = Tetrimino([[1, 1],[0, 1],[0, 1]], [1, 1], "blue")
-    I = Tetrimino([[1, 1, 1, 1]], [0, 2], "cyan")
+    I = Tetrimino([[1, 1, 1, 1]], [0.5, 2], "cyan")
     O = Tetrimino([[1, 1],[1, 1]], [0.5, 0.5], "yellow")
     T = Tetrimino([[0, 1], [1, 1], [0, 1]], [1, 1], "purple")
     return [S, Z, L, J, I, O, T]
