@@ -36,7 +36,6 @@ class Board:
     def check(self):
         line = HEIGHT - 1
         while(line >= 0):
-            print(line)
             for i in range(WIDTH):
                 if(not self.is_block_at(i, line)):
                     line -= 1
@@ -44,8 +43,8 @@ class Board:
                 elif(i == WIDTH - 1):
                     #ライン消去
                     for j in range(WIDTH):
-                        for line2 in range(HEIGHT - line - 1):
-                            k = HEIGHT - line2
+                        for line2 in range(line):
+                            k = line - line2
                             if(k == 0):
                                 self.data[j][k] = None
                             else:
