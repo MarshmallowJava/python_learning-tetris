@@ -50,7 +50,6 @@ class Tetrimino:
         self.center[1] += dy
 
     def rotate(self, angle, board):
-
         for block in self.blocks:
             if(not block.can_rotate(angle, self.center[0], self.center[1], board)):
                 return
@@ -172,10 +171,10 @@ class Block:
         return floor(f) if f < 0 else int(f)
 
 def block_list():
-    S = Tetrimino([[0,1],[1,1],[1,0]], [1.5, 1], "green")
-    Z = Tetrimino([[1,0],[1,1],[0,1]], [1.5, 1], "red")
-    L = Tetrimino([[0, 1], [0, 1], [1, 1]], [1, 1.5], "orange")
-    J = Tetrimino([[1, 1],[0, 1],[0, 1]], [1, 1.5], "blue")
+    S = Tetrimino([[0,1],[1,1],[1,0]], [1, 1], "green")
+    Z = Tetrimino([[1,0],[1,1],[0,1]], [1, 1], "red")
+    L = Tetrimino([[0, 1], [0, 1], [1, 1]], [1, 1], "orange")
+    J = Tetrimino([[1, 1],[0, 1],[0, 1]], [1, 1], "blue")
     I = Tetrimino([[1, 1, 1, 1]], [0, 2], "cyan")
     O = Tetrimino([[1, 1],[1, 1]], [0.5, 0.5], "yellow")
     T = Tetrimino([[0, 1], [1, 1], [0, 1]], [1, 1], "purple")
