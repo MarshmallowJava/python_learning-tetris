@@ -27,9 +27,9 @@ class Tetrimino:
         self.center = center
         self.speed = 0
         self.grace = 0
-        self.drop = False
         self.placed = False
         self.angle = 0
+        self.reset_count = 8
 
         self.blocks = []
         for x in range(len(shape)):
@@ -41,7 +41,7 @@ class Tetrimino:
     def update(self, board):
         if(self.is_ground(board)):
             self.grace += 1
-            if(self.grace > MAXGRACE or (self.drop and self.grace > MAXGRACE / 2)):
+            if(self.grace > MAXGRACE):
                 self.place(board)
         else:
             self.speed += 1
@@ -56,23 +56,27 @@ class Tetrimino:
             i += 1
         self.shadow_depth = i
 
-        self.drop = False
-
     def move_left(self, board):
-        self.move(-1, 0, board)
+        if(self.move(-1, 0, board)):
+            if(self.grace > 0):
+                self.reset_grace()        
 
     def move_right(self, board):
-        self.move(1, 0, board)
+        if(self.move(1, 0, board)):
+            if(self.grace > 0):
+                self.reset_grace()
     
     def move(self, dx, dy, board, absolute = False):
         if(not absolute and self.is_collide(dx, dy, board)):
-            return
+            return False
 
         for block in self.blocks:
             block.move(dx, dy)
 
         self.center[0] += dx
         self.center[1] += dy
+
+        return True
 
     def rotate(self, angle, board):
         index = self.angle
@@ -100,15 +104,22 @@ class Tetrimino:
                 self.center[0] += d[0]
                 self.center[1] += d[1]
 
+                if(self.grace > 0):
+                    self.reset_grace()
+
                 return
 
     def softdrop(self):
         self.speed = SPEED
-        self.drop = True
     
     def harddrop(self):
         self.move(0, self.shadow_depth, None, absolute=True)
         self.grace = MAXGRACE
+    
+    def reset_grace(self):
+        if(self.reset_count > 0):
+            self.grace = 0
+            self.reset_count -= 1
     
     def place(self, board):
         for block in self.blocks:
