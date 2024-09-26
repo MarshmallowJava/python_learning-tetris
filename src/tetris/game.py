@@ -46,7 +46,7 @@ class Board:
                     count += 1
                     #ライン消去
                     for j in range(WIDTH):
-                        for line2 in range(line):
+                        for line2 in range(line + 1):
                             k = line - line2
                             if(k == 0):
                                 self.data[j][k] = None
