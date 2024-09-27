@@ -86,21 +86,34 @@ class Game:
         #連数
         self.ren = -1
 
+        #消去アニメーション
+        self.anim_delay = 0
+
     def start(self):
         self.supply()
-        self.current = self.take_next()
         self.update()
 
     def update(self):
-        #ミノ処理
-        self.current.update(self.board)
-        if(self.current.placed):
-            self.current = self.take_next()
-            self.already_hold = False
-            if(self.board.check() > 0):
-                self.ren += 1
-            else:
-                self.ren = -1
+        if(self.anim_delay == 0):
+            #所持ミノがなければ供給
+            if(self.current == None):
+                self.current = self.take_next()
+
+            #ミノ処理
+            self.current.update(self.board)
+
+            #設置されたなら判定
+            if(self.current.placed):
+                self.current = None
+                self.already_hold = False
+                if(self.board.check() > 0):
+                    self.anim_delay = 25
+                    self.ren += 1
+                else:
+                    self.ren = -1
+                
+        else:
+            self.anim_delay -= 1
 
         #再描画
         self.repaint()
@@ -135,7 +148,8 @@ class Game:
             self.holding.paint(offX - SIZE / 2 * 4, offY + SIZE / 2 * 2, SIZE / 2, self.canvas, center = True)
 
         #現在のミノを表示
-        self.current.paint(offX, offY, SIZE, self.canvas)
+        if(not self.current == None):
+            self.current.paint(offX, offY, SIZE, self.canvas)
 
     def supply(self):
         stock = block_list()
@@ -170,22 +184,29 @@ class Game:
                 self.holding = block
 
     def on_moveleft(self, e):
-        self.current.move_left(self.board)
+        if(not self.current == None):
+            self.current.move_left(self.board)
 
     def on_moveright(self, e):
-        self.current.move_right(self.board)
+        if(not self.current == None):
+            self.current.move_right(self.board)
     
     def on_rotate_right(self, e):
-        self.current.rotate(90, self.board)
+        if(not self.current == None):
+            self.current.rotate(90, self.board)
 
     def on_rotate_left(self, e):
-        self.current.rotate(-90, self.board)
+        if(not self.current == None):
+            self.current.rotate(-90, self.board)
 
     def on_softdrop(self, e):
-        self.current.softdrop()
+        if(not self.current == None):
+            self.current.softdrop()
     
     def on_harddrop(self, e):
-        self.current.harddrop()
+        if(not self.current == None):
+            self.current.harddrop()
     
     def on_hold(self, e):
-        self.hold()
+        if(not self.current == None):
+            self.hold()
