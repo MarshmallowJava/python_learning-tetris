@@ -53,12 +53,14 @@ class Tetrimino:
         self.placed = False
         self.angle = 0
         self.reset_count = 8
+        self.last_srs = -1
+        self.t_spin = False
 
         self.blocks = []
         for x in range(len(shape)):
             for y in range(len(shape[x])):
-                if(shape[x][y] == 1):
-                    block = Block([x, y], color)
+                if(shape[x][y] != 0):
+                    block = Block([x, y], color, ghost = shape[x][y] == -1)
                     self.blocks.append(block)
 
     def update(self, board):
@@ -71,6 +73,7 @@ class Tetrimino:
             if(self.speed > SPEED):
                 self.move(0, 1, board)
                 self.speed = 0
+                self.last_srs = -1
         
         i = 0
         while(True):
@@ -82,12 +85,16 @@ class Tetrimino:
     def move_left(self, board):
         if(self.move(-1, 0, board)):
             if(self.grace > 0):
-                self.reset_grace()        
+                self.reset_grace()
+            
+            self.last_srs = -1
 
     def move_right(self, board):
         if(self.move(1, 0, board)):
             if(self.grace > 0):
                 self.reset_grace()
+
+            self.last_srs = -1
     
     def move(self, dx, dy, board, absolute = False):
         if(not absolute and self.is_collide(dx, dy, board)):
@@ -104,7 +111,8 @@ class Tetrimino:
     def rotate(self, angle, board):
         srsdata = SRSDATA[self.srs_type][0 if angle > 0 else 1][int(self.angle / 90)]
 
-        for d in srsdata:
+        for i in range(len(srsdata)):
+            d = srsdata[i]
             flag = True
 
             for block in self.blocks:
@@ -126,6 +134,8 @@ class Tetrimino:
                 if(self.grace > 0):
                     self.reset_grace()
 
+                self.last_srs = i
+
                 return
 
     def softdrop(self):
@@ -134,6 +144,9 @@ class Tetrimino:
     def harddrop(self):
         self.move(0, self.shadow_depth, None, absolute=True)
         self.grace = MAXGRACE
+
+        if(self.shadow_depth > 0):
+            self.last_srs = -1
     
     def reset_grace(self):
         if(self.reset_count > 0):
@@ -141,8 +154,17 @@ class Tetrimino:
             self.reset_count -= 1
     
     def place(self, board):
+        ghost_count = 0
+
         for block in self.blocks:
             block.place(board)
+
+            if(block.pass_through(board)):
+                ghost_count += 1
+        
+        if(ghost_count > 2 and self.last_srs > -1):
+            self.t_spin = True
+
         self.placed = True
 
     def is_collide(self, dx, dy, board):
@@ -198,21 +220,26 @@ class Tetrimino:
 
 class Block:
 
-    def __init__(self, pos, color):
+    def __init__(self, pos, color, ghost = False):
         self.pos = pos
         self.color = color
+        self.ghost = ghost
 
     def move(self, dx, dy):
         self.pos[0] += dx
         self.pos[1] += dy
 
     def place(self, board):
-        board.place_at(self.pos[0], self.pos[1], self.color)
+        if(not self.ghost):
+            board.place_at(self.pos[0], self.pos[1], self.color)
 
     def is_collide(self, dx, dy, board):
-        return board.is_block_at(self.pos[0] + dx, self.pos[1] + dy)
+        return False if self.ghost else board.is_block_at(self.pos[0] + dx, self.pos[1] + dy)
     
     def can_rotate(self, dx, dy, r, cx, cy, board):
+        if(self.ghost):
+            return True
+
         s = Block.sin(r)
         c = Block.cos(r)
 
@@ -236,8 +263,9 @@ class Block:
         self.pos[1] = ny
 
     def paint(self, x, y, size, canvas, color = None):
-        color = self.color if color == None else color
-        canvas.create_rectangle(x + self.pos[0] * size, y + self.pos[1] * size, x + (self.pos[0] + 1) * size, y + (self.pos[1] + 1) * size, fill=color)
+        if(not self.ghost):
+            color = self.color if color == None else color
+            canvas.create_rectangle(x + self.pos[0] * size, y + self.pos[1] * size, x + (self.pos[0] + 1) * size, y + (self.pos[1] + 1) * size, fill=color)
     
     def sin(angle):
         if(angle == 90):
@@ -257,6 +285,9 @@ class Block:
 
     def cast(f):
         return floor(f) if f < 0 else int(f)
+    
+    def pass_through(self, board):
+        return self.ghost and board.is_block_at(self.pos[0], self.pos[1])
 
 def block_list():
     S = Tetrimino([[0,1],[1,1],[1,0]], [1, 1], 0, "#00ee00", "#88ff88")
@@ -265,5 +296,5 @@ def block_list():
     J = Tetrimino([[1, 1],[0, 1],[0, 1]], [1, 1], 0, "#0000ee", "#8888ff")
     I = Tetrimino([[1], [1], [1], [1]], [1.5, 0.5], 1, "#00e8e8", "#88fcfc")
     O = Tetrimino([[1, 1],[1, 1]], [0.5, 0.5], 0, "#eeee00", "#ffff88")
-    T = Tetrimino([[0, 1], [1, 1], [0, 1]], [1, 1], 0, "#aa22ee", "#dd88ff")
+    T = Tetrimino([[-1, 1, -1], [1, 1, 0], [-1, 1, -1]], [1, 1], 0, "#aa22ee", "#dd88ff")
     return [S, Z, L, J, I, O, T]
