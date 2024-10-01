@@ -210,3 +210,7 @@ class Game:
     def on_hold(self, e):
         if(not self.current == None):
             self.hold()
+
+    def on_reset(self, e):
+        self.__init__(self.canvas)
+        self.supply()

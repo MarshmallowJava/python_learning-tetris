@@ -28,6 +28,7 @@ window.bind("<Up>", game.on_rotate_right)
 window.bind("<KeyPress-z>", game.on_rotate_left)
 window.bind("<KeyPress-x>", game.on_hold)
 window.bind("<KeyPress-c>", game.on_harddrop)
+window.bind("<KeyPress-r>", game.on_reset)
 
 #ゲーム開始
 game.start()
