@@ -94,6 +94,9 @@ class Game:
         #連数
         self.ren = -1
 
+        #T-Spin
+        self.t_spin = 0
+
         #パフェ達成
         self.perfect = False
 
@@ -115,17 +118,22 @@ class Game:
 
             #設置されたなら判定
             if(self.current.placed):
-                self.current = None
-                self.already_hold = False
-                if(self.board.check() > 0):
+                count = self.board.check()
+                if(count > 0):
                     self.anim_delay = 25
                     self.ren += 1
+
+                    self.t_spin = count
+                    if(not self.current.t_spin):
+                        self.t_spin = 0
 
                     if(self.board.nothing_there()):
                         self.perfect = True
                 else:
                     self.ren = -1
-                
+
+                self.current = None
+                self.already_hold = False                
         else:
             self.anim_delay -= 1
 
@@ -150,6 +158,10 @@ class Game:
         if(self.ren > 0):
             self.canvas.create_text(10, offY, text=str(self.ren) + "REN", anchor="sw")
         
+        if(self.t_spin > 0 and self.anim_delay > 0):
+            label = ["T-Spin Mini", "T-Spin Double", "T-Spin Triple"]
+            self.canvas.create_text(10, offY + 20, text=label[self.t_spin - 1], anchor="sw")
+
         if(self.perfect and self.anim_delay > 0):
             self.canvas.create_text(10, offY + 40, text="PERFECT CLEAR", anchor="sw")
 
