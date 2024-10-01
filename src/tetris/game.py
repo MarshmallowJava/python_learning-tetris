@@ -64,6 +64,14 @@ class Board:
                 color = self.data[x][y]
                 color = color if not color == None else ""
                 canvas.create_rectangle(offX + x * SIZE, offY + y * SIZE, offX + x * SIZE + SIZE, offY + y * SIZE + SIZE, width=1, fill=color)
+    
+    def nothing_there(self):
+        for line in self.data:
+            for b in line:
+                if(not b == None):
+                    return False
+        
+        return True
 
 class Game:
 
@@ -85,6 +93,9 @@ class Game:
 
         #連数
         self.ren = -1
+
+        #パフェ達成
+        self.perfect = False
 
         #消去アニメーション
         self.anim_delay = 0
@@ -109,6 +120,9 @@ class Game:
                 if(self.board.check() > 0):
                     self.anim_delay = 25
                     self.ren += 1
+
+                    if(self.board.nothing_there()):
+                        self.perfect = True
                 else:
                     self.ren = -1
                 
@@ -135,6 +149,9 @@ class Game:
         #REN数
         if(self.ren > 0):
             self.canvas.create_text(10, offY, text=str(self.ren) + "REN", anchor="sw")
+        
+        if(self.perfect and self.anim_delay > 0):
+            self.canvas.create_text(10, offY + 40, text="PERFECT CLEAR", anchor="sw")
 
         #次のミノを描画
         self.canvas.create_text(offX + WIDTH * SIZE + SIZE / 2 * 3, offY, text="NEXT", anchor="s")
