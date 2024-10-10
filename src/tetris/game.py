@@ -129,6 +129,8 @@ class Game:
 
                     if(self.board.nothing_there()):
                         self.perfect = True
+                    else:
+                        self.perfect = False
                 else:
                     self.ren = -1
 
